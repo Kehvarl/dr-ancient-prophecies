@@ -5,7 +5,7 @@ module Main
       @color = vars.color || {r:0, g:0, b:0}
       @value = vars.value || 0
       @face = vars.face || false
-      @name = vars.name || "No Card"
+      @name = vars.name.to_s || "No Card"
     end
 
     def render x, y, w=64, h=96
@@ -14,7 +14,10 @@ module Main
       out << {x:x, y:y, w:w, h:h, r:0, g:0, b:0}.border!
       out << {x:x+4, y:y+24, text:@value.to_s, **@color}.label!
       out << {x:(x+w-24), y:(y+h-8), text:@value.to_s, **@color}.label!
-      out << {x:x+16, y:(y+(h/2)), text:@name, **@color}.label!
+      out << {x:(x+w-24), y:y+24, text:@suit.to_s, **@color}.label!
+      out << {x:x+4, y:(y+h-8), text:@suit.to_s, **@color}.label!
+      nw, nh = DR.calcstringbox(@name)
+      out << {x:x+(w.div(2) - (nw.div(2))), y:(y+(h.div(2))), text:@name, **@color}.label!
       out
     end
   end
@@ -68,6 +71,17 @@ module Main
 
     def discards
       @discards
+    end
+
+    def render x, y, w=64, h=96
+      out = []
+      out << {x:x, y:y, w:w, h:h, r:148, g:132, b:164}.solid!
+      out << {x:x, y:y, w:w, h:h, r:0, g:0, b:0}.border!
+      nw, nh = DR.calcstringbox("Ancient")
+      out << {x:x+(w.div(2) - (nw.div(2))), y:(y+(h.div(2))+nh), text:"Ancient", r:80, g:0, b:80}.label!
+      nw, nh = DR.calcstringbox("Prophecies")
+      out << {x:x+(w.div(2) - (nw.div(2))), y:(y+(h.div(2))), text:"Prophecies", r:80, g:0, b:80}.label!
+      out
     end
   end
 end
