@@ -1,9 +1,11 @@
 module Main
   class Card
     def initialize vars={}
-      @suit = vars.suit || ""
+      @suit = vars.suit[0] || ""
+      @suit_offset = vars.suit[1] || nil
       @color = vars.color || {r:0, g:0, b:0}
       @value = vars.value || 0
+      @symbol = vars.symbol || ""
       @face = vars.face || false
       @name = vars.name.to_s || "No Card"
     end
@@ -12,10 +14,15 @@ module Main
       out = []
       out << {x:x, y:y, w:w, h:h, r:148, g:132, b:164}.solid!
       out << {x:x, y:y, w:w, h:h, r:0, g:0, b:0}.border!
-      out << {x:x+4, y:y+24, text:@value.to_s, **@color}.label!
-      out << {x:(x+w-24), y:(y+h-8), text:@value.to_s, **@color}.label!
-      out << {x:(x+w-24), y:y+24, text:@suit.to_s, **@color}.label!
-      out << {x:x+4, y:(y+h-8), text:@suit.to_s, **@color}.label!
+      out << {x:x+4, y:y+24, text:@symbol, **@color}.label!
+      out << {x:(x+w-24), y:(y+h-8), text:@symbol, **@color}.label!
+      if @suit_offset
+        out << {x:(x+w-24), y:y+8, h:16, w:16, tile_w:16, tile_x:@suit_offset, path:"sprites/suites.png"}.sprite!
+        out << {x:x+4, y:(y+h-24), h:16, w:16, tile_w:16, tile_x:@suit_offset, path:"sprites/suites.png"}.sprite!
+      else
+        out << {x:(x+w-24), y:y+24, text:@suit.to_s, **@color}.label!
+        out << {x:x+4, y:(y+h-8), text:@suit.to_s, **@color}.label!
+      end
       nw, nh = DR.calcstringbox(@name)
       out << {x:x+(w.div(2) - (nw.div(2))), y:(y+(h.div(2))), text:@name, **@color}.label!
       out
@@ -24,16 +31,19 @@ module Main
 
   class Deck
     def initialize
-      names=["Ace",2,3,4,5,6,7,8,9,10,"Jack","Queen","King"]
+      primary=[
+        [1,"A", "Ace"],[2,2,2],[3,3,3],[4,4,4],[5,5,5],[6,6,6],
+        [7,7,7],[8,8,8],[9,9,9],[10,10,10],
+        [11,"J","Jack"],[12,"Q","Queen"],[13,"K","King"]]
       colors=[{r:80, g:0, b:0}, {r:0, g:0, b:80}]
       color = 0
       @cards = []
-      ["C","K","A","S"].each do |suit|
+      [["C",32],["K",16],["A",48],["S",0]].each do |suit|
         c = colors[color]
-        [1,2,3,4,5,6,7,8,9,10,11,12,13].each do |value|
-          name = names[value-1]
-          face = (value > 10)
-          @cards << Card.new({suit:suit, value:value, name:name, face:face, color:c})
+        primary.each do |value|
+          face = (value[0] > 10)
+          @cards << Card.new({suit:suit, value:value[0], symbol:value[1], name:value[2],
+                              face:face, color:c})
         end
         color = (color +1) %2
       end

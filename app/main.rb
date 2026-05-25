@@ -19,7 +19,7 @@ module Main
       args.state.output << args.state.deck.draw().render(args.state.x, 64, 128, 196)
       args.state.x += 22
     end
-    #args.outputs.primitives << args.state.output
+    args.outputs.primitives << args.state.output
     args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
   end
 
