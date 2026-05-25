@@ -40,6 +40,9 @@ module Main
     if args.state.deck.can_draw?
       card = args.state.deck.draw()
       args.state.output << card.render_sprite(positions.sample())
+    elsif args.inputs.mouse.click or args.inputs.keyboard.key_up.space
+      args.state.deck.shuffle()
+      args.state.output = []
     end
     args.outputs.primitives << args.state.output
     args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
