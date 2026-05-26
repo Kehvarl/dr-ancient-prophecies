@@ -21,6 +21,18 @@ module Main
     out << {x:664, y:470, w:132, h:200, angle:315, path:"sprites/square/black.png"}.sprite!
     out << {x:282, y:260, w:132, h:200, angle:45, path:"sprites/square/black.png"}.sprite!
 
+    out << {x:918, y:170, w:204, h:64, r:128, g:128, b:128}.solid!
+    out << {x:928, y:213, text:"Next Card Will Be:", r:0, g:0, b:0}.label!
+    out << {x:919, y:170, w:204, h:64, r:0, g:0, b:0}.border!
+
+    out << {x:918, y:64, w:96, h:96, r:128, g:196, b:128}.solid!
+    out << {x:936, y:120, text:"Lower", r:0, g:0, b:0}.label!
+    out << {x:918, y:64, w:96, h:96, r:0, g:0, b:0}.border!
+
+    out << {x:1026, y:64, w:96, h:96, r:196, g:128, b:128}.solid!
+    out << {x:1046, y:120, text:"Higher", r:0, g:0, b:0}.label!
+    out << {x:1026, y:64, w:96, h:96, r:0, g:0, b:0}.border!
+
   end
 
   def tick args
