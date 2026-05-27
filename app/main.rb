@@ -2,6 +2,7 @@ require('app/cards.rb')
 
 module Main
   def initialize args
+    args.state.game_state = :menu
     args.state.deck = Deck.new()
     args.state.x = 10
     args.state.output = []
@@ -39,6 +40,18 @@ module Main
     if args.state.tick_count == 0
       initialize args
     end
+    case args.state.game_state
+    when :menu
+      args.state.game_state = :draw_card
+    when :draw_card
+      draw_card_tick args
+    when :player_input
+      #input_tick args
+      args.state.game_state = :draw_card
+    end
+  end
+
+  def draw_card_tick args
     args.outputs.primitives << draw_playfield
 
     positions = [
