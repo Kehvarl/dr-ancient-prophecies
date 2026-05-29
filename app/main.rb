@@ -6,6 +6,11 @@ module Main
     args.state.deck = Deck.new()
     args.state.x = 10
     args.state.output = []
+    args.state.current_stack = 0
+    args.state.correct = 0
+    args.state.incorrect = 0
+    args.state.major = 0
+    args.state.major_incorrect = 0
     args.state.deck.create_card_render_target(args)
         args.state.deck.shuffle()
   end
@@ -47,6 +52,23 @@ module Main
     args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
   end
 
+  def select_next_tick args
+    args.outputs.primitives << draw_playfield(args)
+    args.outputs.primitives << args.state.output
+    args.outputs.primitives << draw_player_buttons(args)
+    
+    out = nil
+    if args.mouse.click
+      if args.mouse.intersect_rect?({x:918, y:64, w:96, h:96})
+        out = :lower
+      end
+
+      if args.mouse.intersect_rect?({x:1026, y:64, w:96, h:96})
+        out = :higher
+      end
+    end
+    out
+  end
 
   def draw_playfield args
     out = []
