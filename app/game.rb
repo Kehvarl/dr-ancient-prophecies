@@ -72,20 +72,10 @@ class Game
   end
 
   def draw_buttons
-    out = []
-    out << {x:918, y:170, w:204, h:64, r:128, g:128, b:128}.solid!
-    out << {x:928, y:213, text:"Next Card Will Be:", r:0, g:0, b:0}.label!
-    out << {x:919, y:170, w:204, h:64, r:0, g:0, b:0}.border!
-
-    out << {x:918, y:64, w:96, h:96, r:128, g:164, b:128}.solid!
-    out << {x:936, y:120, text:"Lower", r:0, g:0, b:0}.label!
-    out << {x:918, y:64, w:96, h:96, r:0, g:0, b:0}.border!
-
-    out << {x:1026, y:64, w:96, h:96, r:164, g:128, b:128}.solid!
-    out << {x:1046, y:120, text:"Higher", r:0, g:0, b:0}.label!
-    out << {x:1026, y:64, w:96, h:96, r:0, g:0, b:0}.border!
+    [{x:918, y:170, w:204, h:64, r:128, g:128, b:128}.solid!,
+     {x:928, y:213, text:"Next Card Will Be:", r:0, g:0, b:0}.label!,
+     {x:919, y:170, w:204, h:64, r:0, g:0, b:0}.border!]
   end
-
 
   def tick args
     args.outputs.primitives << draw_playfield
