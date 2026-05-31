@@ -59,13 +59,20 @@ class Game
     ]
   end
 
+  def placeholder args
+    args.outputs[:placeholder].w = 132
+    args.outputs[:placeholder].h = 200
+    args.outputs[:placeholder].primitives << {x:0, y:0, w:132, h:200, r:64, g:16, b:16}.solid!
+    args.outputs[:placeholder].primitives << {x:0, y:0, w:132, h:200, r:0, g:0, b:0}.border!
+  end
+
   def draw_playfield
     out = []
     out << {x: 0, y: 0, w: 1280, h: 720, r: 0, g: 80, b:40}.solid!
     out << {x:958, y:498, w:132, h:200, r:0, g:0, b:0}.border!
 
     @positions.each do |p|
-      out << {x:p.x, y:p.y, w:p.w, h:p.h, angle:p.angle, path:"sprites/square/black.png"}.sprite!
+      out << {x:p.x, y:p.y, w:p.w, h:p.h, angle:p.angle, path: :placeholder}.sprite!
     end
 
     out
