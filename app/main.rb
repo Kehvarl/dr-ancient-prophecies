@@ -6,6 +6,7 @@ module Main
     args.state.game_state = :menu
     args.state.deck = Deck.new()
     args.state.game = Game.new()
+    args.state.game.placeholder(args)
     args.state.x = 10
     args.state.output = []
     args.state.current_stack = 0
