@@ -65,6 +65,17 @@ module Main
     out
   end
 
+  def button box, text, color
+    tw, th = DR.calcstringbox(text)
+    tx = 640 - (tw.div(2))
+    ty = box.y + box.h - (th.div(2))
+    out = []
+    out << {**box, **color}.solid!
+    out << {x:tx, y:ty, text:text, r:0, g:0, b:0}.label!
+    out << {**box, r:0, g:0, b:0}.border!
+    out
+  end
+
   def menu_tick args
     # Get Input
     # Update state/process
@@ -73,20 +84,8 @@ module Main
     out << {x:0, y:0, w:1280, h:720, r: 0, g: 96, b:40}.solid!
     out << {x:5, y:5, w:1270, h:710, r:0, g:0, b:0}.border!
 
-    out << {x:15, y:445, w:1250, h:45, r: 0, g: 128, b:40}.solid!
-    tw,th = DR.calcstringbox("New Game")
-    tx = 640 - (tw.div(2))
-    ty = 45+445 - (th.div(2))
-    out << {x:tx, y:ty, text:"New Game", r:0, g:0, b:0}.label!
-    out << {x:15, y:445, w:1250, h:45, r:0, g:0, b:0}.border!
-
-    out << {x:15, y:295, w:1250, h:45, r: 128, g: 128, b:40}.solid!
-    tw,th = DR.calcstringbox("Quit")
-    tx = 640 - (tw.div(2))
-    ty = 45+295 - (th.div(2))
-    out << {x:tx, y:ty, text:"Quit", r:0, g:0, b:0}.label!
-    out << {x:15, y:295, w:1250, h:45, r:0, g:0, b:0}.border!
-
+    out << button({x:15, y:445, w:1250, h:45}, "New Game", {r: 0, g: 128, b:40})
+    out << button({x:15, y:295, w:1250, h:45}, "Quit", {r: 128, g: 128, b:40})
 
     args.outputs.primitives << out
   end
