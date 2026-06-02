@@ -24,7 +24,7 @@ module Main
     end
     case args.state.game_state
     when :menu
-      args.state.game_state = :draw_card
+      menu_tick args
     when :draw_card
       draw_card_tick args
     when :player_input
@@ -35,7 +35,6 @@ module Main
 
   def draw_card_tick args
     args.state.game.tick(args)
-
 
     if args.state.deck.can_draw?
       card = args.state.deck.draw()
@@ -64,6 +63,32 @@ module Main
       end
     end
     out
+  end
+
+  def menu_tick args
+    # Get Input
+    # Update state/process
+    # Draw menu
+    out = []
+    out << {x:0, y:0, w:1280, h:720, r: 0, g: 96, b:40}.solid!
+    out << {x:5, y:5, w:1270, h:710, r:0, g:0, b:0}.border!
+
+    out << {x:15, y:445, w:1250, h:45, r: 0, g: 128, b:40}.solid!
+    tw,th = DR.calcstringbox("New Game")
+    tx = 640 - (tw.div(2))
+    ty = 45+445 - (th.div(2))
+    out << {x:tx, y:ty, text:"New Game", r:0, g:0, b:0}.label!
+    out << {x:15, y:445, w:1250, h:45, r:0, g:0, b:0}.border!
+
+    out << {x:15, y:295, w:1250, h:45, r: 128, g: 128, b:40}.solid!
+    tw,th = DR.calcstringbox("Quit")
+    tx = 640 - (tw.div(2))
+    ty = 45+295 - (th.div(2))
+    out << {x:tx, y:ty, text:"Quit", r:0, g:0, b:0}.label!
+    out << {x:15, y:295, w:1250, h:45, r:0, g:0, b:0}.border!
+
+
+    args.outputs.primitives << out
   end
 
 end
