@@ -70,7 +70,9 @@ module Main
     tx = 640 - (tw.div(2))
     ty = box.y + box.h - (th.div(2))
     if mouse.intersect_rect?(box)
-      color.merge!({r:32, g:32, b:32}) {|k, o, n| o+n }
+      color.r += 32
+      color.g += 32
+      color.b += 32
     end
     out = []
     out << {**box, **color}.solid!
