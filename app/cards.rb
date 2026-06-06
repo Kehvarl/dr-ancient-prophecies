@@ -1,6 +1,6 @@
 module Main
   class Card
-    attr_accessor :render_target_offset
+    attr_accessor :render_target_offset, :suit, :value, :face, :major, :name
     def initialize vars={}
       suit = vars.suit || ["", nil]
 
@@ -49,9 +49,14 @@ module Main
                       source_x: @render_target_offset,
                       source_w: w, source_h: h}).sprite!
     end
+
+    def to_s
+      "[#{@suit}, #{@name}, #{@value}]"
+    end
   end
 
   class Deck
+    attr_accessor :last, :current
     def initialize
       primary=[
         [1,"A", "Ace"],[2,2,2],[3,3,3],[4,4,4],[5,5,5],[6,6,6],
@@ -89,6 +94,8 @@ module Main
       end
       @deck = []
       @discards = []
+      @last = nil
+      @current = nil
     end
 
     def create_card_render_target args
@@ -120,7 +127,9 @@ module Main
     end
 
     def draw
-      @deck.pop()
+      @last = @current
+      @current = @deck.pop()
+      @current
     end
 
     def discard card
