@@ -89,5 +89,12 @@ class Game
     args.outputs.primitives << draw_buttons
     l = @lower.tick(args)
     h = @higher.tick(args)
+    if l
+      return :lower
+    elsif h
+      return :higher
+    else
+      return false
+    end
   end
 end
