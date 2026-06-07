@@ -1,5 +1,6 @@
 require('app/cards.rb')
 require('app/game.rb')
+require('app/state.rb')
 
 module Main
   def initialize args
@@ -20,30 +21,23 @@ module Main
     args.state.deck.shuffle()
   end
 
-  def start_new args
-    args.state.output = []
-    args.state.guess = nil
-    args.state.current_stack = 0
-    args.state.stacks_top = []
-    args.state.correct = 0
-    args.state.incorrect = 0
-    args.state.major = 0
-    # args.state.major_incorrect = 0  # We never forget....
-    args.state.deck.shuffle()
-    args.state.game_state = :draw_card
-  end
-
   def tick args
     if args.state.tick_count == 0
       initialize args
     end
     case args.state.game_state
     when :menu
-      menu_tick args
-    when :draw_card
-      draw_card_tick args
+      state_menu(args)
+    when :new_game
+      state_setup(args)
+    when :draw_first_card
+      state_draw_first(args)
     when :player_input
-      input_tick args
+      state_get_guess(args)
+    when :draw_next_card
+      state_draw_card(args)
+    when :check_guess
+      state_check_guess(args)
     end
   end
 
@@ -51,11 +45,10 @@ module Main
     args.state.game.tick(args)
 
     if args.state.deck.can_draw?
-      pid = Numeric.rand(args.state.game.positions.length)
-      position = args.state.game.positions[pid]
+      position = args.state.game.positions[args.state.current_stack]
       card = args.state.deck.draw()
       args.state.output << card.render_sprite(position)
-      args.state.stacks_top[pid] = card
+      args.state.stacks_top[args.state.current_stack] = card
     #elsif args.inputs.mouse.click or args.inputs.keyboard.key_up.space
     #  args.state.deck.shuffle()
     #  args.state.output = []
@@ -67,13 +60,40 @@ module Main
 
     puts "#{args.state.guess}, #{args.state.deck.last}, #{args.state.deck.current}"
     if args.state.deck.last and args.state.deck.current
+      if args.state.guess == :lower and (args.state.deck.current.value < args.state.deck.last.value)
+        @args.state.correct += 1
+      elsif args.state.guess == :lower and (args.state.deck.current.value > args.state.deck.last.value)
+        args.state.current_stack += 1
+        @args.state.incorrect += 1
+        if args.state.deck.last.major
+          @args.state.major_incorrect += 1
+        end
+      elsif args.state.guess == :higher and (args.state.deck.current.value > args.state.deck.last.value)
+        @args.state.correct += 1
+      elsif args.state.guess == :higher and (args.state.deck.current.value < args.state.deck.last.value)
+        args.state.current_stack += 1
+        @args.state.incorrect += 1
+        if args.state.deck.last.major
+          @args.state.major_incorrect += 1
+        end
+      end
+
       puts "#{args.state.deck.current.value < args.state.deck.last.value}"
+
+      if args.state.current_stack >= 5
+        args.state.game_state = :game_over
+      end
+
+      if args.state.guess
+        args.state.guess = nil
+        args.state.game_state = :player_input
+      elsif (args.state.deck.current.value == args.state.deck.last.value)
+        # Oops, duplicate.  We need to draw again.
+        # I suspectt we need to split calculating the result and drawing cards into separate states
+      end
     end
 
-    args.state.guess = nil
-    args.state.game_state = :player_input
-    args.outputs.primitives << args.state.output
-    args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
+    render_game(args)
   end
 
   def input_tick args
@@ -84,6 +104,10 @@ module Main
       args.state.game_state = :draw_card
     end
 
+    render_game(args)
+  end
+
+  def render_game args
     args.outputs.primitives << args.state.output
     args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
   end
@@ -102,35 +126,6 @@ module Main
     out << {x:tx, y:ty, text:text, r:0, g:0, b:0}.label!
     out << {**box, r:0, g:0, b:0}.border!
     out
-  end
-
-  def menu_tick args
-    # Button locations
-    new_box = {x:15, y:445, w:1250, h:45}
-    quit_box = {x:15, y:295, w:1250, h:45}
-
-    # Get Input
-    hover_new = args.inputs.mouse.intersect_rect?(new_box)
-    hover_quit = args.inputs.mouse.intersect_rect?(quit_box)
-
-    # Update state/process
-    if args.inputs.mouse.click
-      if hover_quit
-        DR.request_quit
-      elsif hover_new
-        start_new(args)
-      end
-    end
-
-    # Draw menu
-    out = []
-    out << {x:0, y:0, w:1280, h:720, r: 0, g: 96, b:40}.solid!
-    out << {x:5, y:5, w:1270, h:710, r:0, g:0, b:0}.border!
-
-    out << button(new_box, "New Game", {r: 0, g: 128, b:40}, hover_new)
-    out << button(quit_box, "Quit", {r: 128, g: 128, b:40}, hover_quit)
-
-    args.outputs.primitives << out
   end
 
 end
