@@ -38,6 +38,12 @@ module Main
       state_draw_card(args)
     when :check_guess
       state_check_guess(args)
+    when :score
+      state_score(args)
+    when :next_stack
+      state_next_stack(args)
+    when :game_over
+      state_game_over(args)      
     end
   end
 

@@ -67,8 +67,7 @@ module Main
       args.state.game_state = :draw_next_card
     end
 
-    args.outputs.primitives << args.state.output
-    args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
+    render_game(args)
   end
 
   def state_draw_card args
@@ -85,10 +84,19 @@ module Main
       # Nothing to draw
       # Options: Reshuffle, magically summon more cards, or end round.
     end
+
+    if args.state.deck.last and args.state.deck.current and (args.state.deck.last == args.state.deck.current)
+      # duplicate value, draw again.
+      # We might want to make this a special state with a message or animation.
+      args.state.game_state = :draw_next_card
+    end
+
   end
 
   def state_check_guess args
-    puts "#{args.state.guess}, #{args.state.deck.last}, #{args.state.deck.current}"
+    # Extremely messy, and is checking, updating scores, updating stacks, and computing game over.
+
+    #puts "#{args.state.guess}, #{args.state.deck.last}, #{args.state.deck.current}"
     if args.state.deck.last and args.state.deck.current
       if args.state.guess == :lower and (args.state.deck.current.value < args.state.deck.last.value)
         args.state.correct += 1
@@ -108,7 +116,7 @@ module Main
         end
       end
       if args.state.current_stack >= 5
-        args.state.game_state = :game_over  
+        args.state.game_state = :game_over
       else
         args.state.game_state = :player_input
       end
