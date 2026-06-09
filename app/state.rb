@@ -108,6 +108,7 @@ module Main
     # Trigger next-stack selection and first draw
 
     #puts "#{args.state.guess}, #{args.state.deck.last}, #{args.state.deck.current}"
+    args.state.game_state = :player_input
     if args.state.deck.last and args.state.deck.current
       if args.state.guess == :lower and (args.state.deck.current.value < args.state.deck.last.value)
         args.state.correct += 1
@@ -138,7 +139,7 @@ module Main
     if args.state.current_stack >= 5
       args.state.game_state = :game_over
     else
-      args.state.game_state = :player_input
+      args.state.game_state = :draw_first_card
     end
   end
 
