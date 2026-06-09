@@ -94,40 +94,55 @@ module Main
   end
 
   def state_check_guess args
+    #puts "#{args.state.guess}, #{args.state.deck.last}, #{args.state.deck.current}"
+
     # Extremely messy, and is checking, updating scores, updating stacks, and computing game over.
 
-    # Proper logic
     # Do we have 2 cards?  If not, we need 2
+    args.state.game_state = :player_input
+    if not args.state.deck.last and args.state.deck.current
+      args.state.game_state = :draw_next_card
+      return
+    end
+
     # Do we have a guess?  If not, we need a guess
+    if not args.state.guess
+      args.state.game_state = :player_input
+      return
+    end
+
     # Are the 2 cards equal?  If so, we should draw a new card
+    if args.state.deck.current.value == args.state.deck.last.value
+      #Might be nice to post a message here.
+      args.state.game_state = :draw_next_card
+      return
+    end
+
     # If we have 2 cards of differing values and a guess
     # If the guess is correct:  Score up
-    # If the guess if wrong:
-    #   If the top card is minor arcana, record minor fail
-    #   If the top card is major arcana, record major fail
-    # Trigger next-stack selection and first draw
+    if args.state.guess == :lower and (args.state.deck.current.value < args.state.deck.last.value)
+      args.state.correct += 1
+    elsif args.state.guess == :higher and (args.state.deck.current.value > args.state.deck.last.value)
+      args.state.correct += 1
 
-    #puts "#{args.state.guess}, #{args.state.deck.last}, #{args.state.deck.current}"
-    args.state.game_state = :player_input
-    if args.state.deck.last and args.state.deck.current
-      if args.state.guess == :lower and (args.state.deck.current.value < args.state.deck.last.value)
-        args.state.correct += 1
-      elsif args.state.guess == :lower and (args.state.deck.current.value > args.state.deck.last.value)
-        args.state.game_state = :next_stack
-        args.state.incorrect += 1
-        if args.state.deck.last.major
-          args.state.major_incorrect += 1
-        end
-      elsif args.state.guess == :higher and (args.state.deck.current.value > args.state.deck.last.value)
-        args.state.correct += 1
-      elsif args.state.guess == :higher and (args.state.deck.current.value < args.state.deck.last.value)
-        args.state.game_state = :next_stack
-        args.state.incorrect += 1
-        if args.state.deck.last.major
-          args.state.major_incorrect += 1
-        end
+    # If the guess if wrong:
+    #   Record failure
+    #   If the top card is major arcana, record major fail
+    #   Trigger next-stack selection and first draw
+    elsif args.state.guess == :lower and (args.state.deck.current.value > args.state.deck.last.value)
+      args.state.game_state = :next_stack
+      args.state.incorrect += 1
+      if args.state.deck.last.major
+        args.state.major_incorrect += 1
+      end
+    elsif args.state.guess == :higher and (args.state.deck.current.value < args.state.deck.last.value)
+      args.state.game_state = :next_stack
+      args.state.incorrect += 1
+      if args.state.deck.last.major
+        args.state.major_incorrect += 1
       end
     end
+
   end
 
   def state_next_stack args
