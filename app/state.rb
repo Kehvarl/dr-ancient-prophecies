@@ -62,7 +62,7 @@ module Main
   def state_get_guess args
     clicked = args.state.game.tick(args)
     if clicked
-      puts clicked
+      # puts clicked
       args.state.guess = clicked
       args.state.game_state = :draw_next_card
     end
@@ -96,12 +96,23 @@ module Main
   def state_check_guess args
     # Extremely messy, and is checking, updating scores, updating stacks, and computing game over.
 
+    # Proper logic
+    # Do we have 2 cards?  If not, we need 2
+    # Do we have a guess?  If not, we need a guess
+    # Are the 2 cards equal?  If so, we should draw a new card
+    # If we have 2 cards of differing values and a guess
+    # If the guess is correct:  Score up
+    # If the guess if wrong:
+    #   If the top card is minor arcana, record minor fail
+    #   If the top card is major arcana, record major fail
+    # Trigger next-stack selection and first draw
+
     #puts "#{args.state.guess}, #{args.state.deck.last}, #{args.state.deck.current}"
     if args.state.deck.last and args.state.deck.current
       if args.state.guess == :lower and (args.state.deck.current.value < args.state.deck.last.value)
         args.state.correct += 1
       elsif args.state.guess == :lower and (args.state.deck.current.value > args.state.deck.last.value)
-        args.state.current_stack += 1
+        args.state.game_state = :next_stack
         args.state.incorrect += 1
         if args.state.deck.last.major
           args.state.major_incorrect += 1
@@ -109,24 +120,26 @@ module Main
       elsif args.state.guess == :higher and (args.state.deck.current.value > args.state.deck.last.value)
         args.state.correct += 1
       elsif args.state.guess == :higher and (args.state.deck.current.value < args.state.deck.last.value)
-        args.state.current_stack += 1
+        args.state.game_state = :next_stack
         args.state.incorrect += 1
         if args.state.deck.last.major
           args.state.major_incorrect += 1
         end
       end
-      if args.state.current_stack >= 5
-        args.state.game_state = :game_over
-      else
-        args.state.game_state = :player_input
-      end
     end
   end
 
-  def state_score args
-  end
-
   def state_next_stack args
+    # Select next stack
+    args.state.current_stack += 1
+    # If no stacks to select, game over
+    # Do something to indicate the new stack
+    # Trigger first-draw in new stack
+    if args.state.current_stack >= 5
+      args.state.game_state = :game_over
+    else
+      args.state.game_state = :player_input
+    end
   end
 
   def state_game_over args
