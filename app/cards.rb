@@ -40,6 +40,8 @@ module Main
           out << {x:x+(w.div(2) - (nw.div(2))), y:line_y, text:line, **@color}.label!
           line_y -= nh
         end
+        nw, nh = DR.calcstringbox(@value.to_s)
+        out << {x:x+(w.div(2) - (nw.div(2))), y:(y+h-nh), text:@value.to_s, **@color}.label!
       end
       out
     end
