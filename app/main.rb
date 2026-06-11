@@ -5,6 +5,7 @@ require('app/state.rb')
 module Main
   def initialize args
     args.state.game_state = :menu
+    args.state.game_state_delay = 0
     args.state.deck = Deck.new()
     args.state.game = Game.new()
     args.state.game.placeholder(args)
@@ -36,6 +37,8 @@ module Main
       state_get_guess(args)
     when :draw_next_card
       state_draw_card(args)
+    when :handle_equal
+      state_handle_equal(args)
     when :check_guess
       state_check_guess(args)
     when :next_stack
