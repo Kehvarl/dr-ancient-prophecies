@@ -113,7 +113,8 @@ module Main
 
     # Are the 2 cards equal?  If so, we should draw a new card
     if args.state.deck.current.value == args.state.deck.last.value
-      #Might be nice to post a message here.
+      # Might be nice to post a message here.
+      # Also a delay...
       args.state.game_state = :draw_next_card
       return
     end
