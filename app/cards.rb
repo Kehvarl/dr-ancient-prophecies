@@ -124,6 +124,11 @@ module Main
       @discards = []
     end
 
+    def shuffle_discards
+      @deck = @discards.clone().shuffle()
+      @discards = []
+    end      
+
     def can_draw?
       @deck.length > 0
     end

@@ -52,9 +52,16 @@ module Main
       args.state.stacks_top[args.state.current_stack] = card
       args.state.game_state = :player_input
     else
-      puts args.state.stacks_top
+      #puts args.state.stacks_top
       # Nothing to draw
       # Options: Reshuffle, magically summon more cards, or end round.
+      # Honestly, I should put covered cards in the discard pile and then I can shuffle that.
+      args.state.deck.shuffle_discards()
+      position = args.state.game.positions[args.state.current_stack]
+      card = args.state.deck.draw()
+      args.state.output << card.render_sprite(position)
+      args.state.stacks_top[args.state.current_stack] = card
+      args.state.game_state = :player_input
     end
 
   end
@@ -76,13 +83,21 @@ module Main
     if args.state.deck.can_draw?
       position = args.state.game.positions[args.state.current_stack]
       card = args.state.deck.draw()
+
+      # Might be neat to show the newly draw card offset from the old one, then
+      # slide them together.  Would require some more complicated state machine
+
       args.state.output << card.render_sprite(position)
+      args.state.deck.discard(args.state.stacks_top[args.state.current_stack])
       args.state.stacks_top[args.state.current_stack] = card
       args.state.game_state = :check_guess
     else
-      puts args.state.stacks_top
-      # Nothing to draw
-      # Options: Reshuffle, magically summon more cards, or end round.
+      args.state.deck.shuffle_discards()
+      position = args.state.game.positions[args.state.current_stack]
+      card = args.state.deck.draw()
+      args.state.output << card.render_sprite(position)
+      args.state.stacks_top[args.state.current_stack] = card
+      args.state.game_state = :player_input      
     end
 
     if args.state.deck.last and args.state.deck.current and (args.state.deck.last == args.state.deck.current)
