@@ -32,6 +32,7 @@ module Main
         nw, nh = DR.calcstringbox(@name.to_s)
         out << {x:x+(w.div(2) - (nw.div(2))), y:(y+(h.div(2))), text:@name, **@color}.label!
       else
+        major = true
         nw, nh = DR.calcstringbox(@name.to_s)
         lines = String.wrapped_lines(@name.to_s, 11)
         line_y = 12 + (nh * lines.length())
@@ -127,7 +128,7 @@ module Main
     def shuffle_discards
       @deck = @discards.clone().shuffle()
       @discards = []
-    end      
+    end
 
     def can_draw?
       @deck.length > 0
