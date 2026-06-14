@@ -185,6 +185,14 @@ module Main
   end
 
   def state_next_stack args
+    position = args.state.game.positions[args.state.current_stack]
+    puts args.state.deck.current
+    puts args.state.deck.current.major
+    if args.state.deck.current.major
+      args.state.output << {**position, path: :inactive_major}.sprite!
+    else
+      args.state.output << {**position, path: :inactive}.sprite!
+    end
     # Select next stack
     args.state.current_stack += 1
     # If no stacks to select, game over

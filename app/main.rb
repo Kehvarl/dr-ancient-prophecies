@@ -20,6 +20,19 @@ module Main
     args.state.major_incorrect = 0
     args.state.deck.create_card_render_target(args)
     args.state.deck.shuffle()
+
+    args.outputs[:active].w = 132
+    args.outputs[:active].h = 200
+    args.outputs[:active].primitives << {x:0, y:0, w:132, h:200, r:255, g:255, b:255}.border!
+
+    args.outputs[:inactive].w = 132
+    args.outputs[:inactive].h = 200
+    args.outputs[:inactive].primitives << {x:0, y:0, w:132, h:200, r:255, g:255, b:255, a:128}.solid!
+
+    args.outputs[:inactive_major].w = 132
+    args.outputs[:inactive_major].h = 200
+    args.outputs[:inactive_major].primitives << {x:0, y:0, w:132, h:200, r:255, g:255, b:255, a:128}.solid!
+    args.outputs[:inactive_major].primitives << {x:0, y:0, w:132, h:200, path:'sprites/polo.png', a:96}.sprite!
   end
 
   def tick args
@@ -60,6 +73,10 @@ module Main
     end
     args.outputs.primitives << args.state.output
     args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
+    if args.state.current_stack < 5
+      position = args.state.game.positions[args.state.current_stack]
+      args.state.output << {**position, path: :active}.sprite!
+    end
   end
 
   def button box, text, color, hover
