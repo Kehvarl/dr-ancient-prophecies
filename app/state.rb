@@ -33,6 +33,8 @@ module Main
     c = {r:Numeric.rand(32...44), g:Numeric.rand(44...64), b:Numeric.rand(32...44)}
     out << {x:tx, y:ty, text:"Ancient Prophecies", size_enum:24, **c}.label!
 
+    out << {x:564, y:144, w:140, h:256, path: 'sprites/polo.png', a:Numeric.rand(144...160)}.sprite!
+
     args.outputs.primitives << out
   end
 
