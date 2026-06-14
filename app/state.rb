@@ -106,6 +106,7 @@ module Main
       args.state.game_state = :draw_next_card
     end
 
+    render_game(args)
   end
 
   def state_check_guess args
@@ -157,6 +158,8 @@ module Main
         args.state.major_incorrect += 1
       end
     end
+
+    render_game(args)
   end
 
   def state_handle_equal args
@@ -167,6 +170,8 @@ module Main
     if args.state.game_state_delay <= 0
       args.state.game_state = :draw_next_card
     end
+
+    render_game(args)
   end
 
   def state_next_stack args
@@ -181,6 +186,8 @@ module Main
     else
       args.state.game_state = :draw_first_card
     end
+
+    render_game(args)
   end
 
   def state_game_over args
