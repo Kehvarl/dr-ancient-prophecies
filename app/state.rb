@@ -97,7 +97,7 @@ module Main
       card = args.state.deck.draw()
       args.state.output << card.render_sprite(position)
       args.state.stacks_top[args.state.current_stack] = card
-      args.state.game_state = :player_input      
+      args.state.game_state = :player_input
     end
 
     if args.state.deck.last and args.state.deck.current and (args.state.deck.last == args.state.deck.current)
@@ -177,11 +177,29 @@ module Main
     # Trigger first-draw in new stack
     if args.state.current_stack >= 5
       args.state.game_state = :game_over
+      create_starfield args
     else
       args.state.game_state = :draw_first_card
     end
   end
 
   def state_game_over args
+    args.state.angle ||= 0
+    args.state.angle += 0.01
+    args.outputs.primitives << {x:0, y:0, w:1280, h:720, r: 0, g: 0, b:0}.solid!
+    args.outputs.primitives << {x:640, y:360, w:1600, h:1600,
+                                angle: args.state.angle,
+                                anchor_x:0.5, anchor_y:0.5, path: :starfield}
+    render_game(args)
+    args.outputs.primitives << {x:100, y:100, w:1080, h:520, r:160, g:192, b:128, a:192}.solid!
+    args.outputs.primitives << {x:100, y:100, w:1080, h:520, r:0, g:0, b:0}.border!
+    tx, ty = center_text({x:100, y:520, w:1080, h:100}, "Game Over")
+    args.outputs.primitives << {x:tx, y:ty, text:"Game Over", r:0, g:0, b:0}.label!
+    tx, ty = center_text({x:100, y:498, w:1080, h:32}, "Score")
+    args.outputs.primitives << {x:tx, y:ty, text:"Score", r:0, g:0, b:0}.label!
+    tx, ty = center_text({x:100, y:466, w:1080, h:24}, "Correct: #{args.state.correct}")
+    args.outputs.primitives << {x:tx, y:ty, text:"Correct: #{args.state.correct}", r:0, g:0, b:255}.label!
+    tx, ty = center_text({x:100, y:442, w:1080, h:24}, "Incorrect: #{args.state.incorrect}")
+    args.outputs.primitives << {x:tx, y:ty, text:"Incorrect: #{args.state.incorrect}", r:128, g:0, b:0}.label!
   end
 end
