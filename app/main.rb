@@ -46,75 +46,11 @@ module Main
     when :game_over
       state_game_over(args)
     end
-  end
 
-  def draw_card_tick args
-    args.state.game.tick(args)
-
-    if args.state.deck.can_draw?
-      position = args.state.game.positions[args.state.current_stack]
-      card = args.state.deck.draw()
-      args.state.output << card.render_sprite(position)
-      args.state.stacks_top[args.state.current_stack] = card
-    #elsif args.inputs.mouse.click or args.inputs.keyboard.key_up.space
-    #  args.state.deck.shuffle()
-    #  args.state.output = []
-    else
-      puts args.state.stacks_top
-      # Nothing to draw
-      # Options: Reshuffle, magically summon more cards, or end round.
-    end
-
-    puts "#{args.state.guess}, #{args.state.deck.last}, #{args.state.deck.current}"
-    if args.state.deck.last and args.state.deck.current
-      if args.state.guess == :lower and (args.state.deck.current.value < args.state.deck.last.value)
-        @args.state.correct += 1
-      elsif args.state.guess == :lower and (args.state.deck.current.value > args.state.deck.last.value)
-        args.state.current_stack += 1
-        @args.state.incorrect += 1
-        if args.state.deck.last.major
-          @args.state.major_incorrect += 1
-        end
-      elsif args.state.guess == :higher and (args.state.deck.current.value > args.state.deck.last.value)
-        @args.state.correct += 1
-      elsif args.state.guess == :higher and (args.state.deck.current.value < args.state.deck.last.value)
-        args.state.current_stack += 1
-        @args.state.incorrect += 1
-        if args.state.deck.last.major
-          @args.state.major_incorrect += 1
-        end
-      end
-
-      puts "#{args.state.deck.current.value < args.state.deck.last.value}"
-
-      if args.state.current_stack >= 5
-        args.state.game_state = :game_over
-      end
-
-      if args.state.guess
-        args.state.guess = nil
-        args.state.game_state = :player_input
-      elsif (args.state.deck.current.value == args.state.deck.last.value)
-        # Oops, duplicate.  We need to draw again.
-        # I suspectt we need to split calculating the result and drawing cards into separate states
-      end
-    end
-
-    render_game(args)
-  end
-
-  def input_tick args
-    clicked = args.state.game.tick(args)
-    if clicked
-      puts clicked
-      args.state.guess = clicked
-      args.state.game_state = :draw_card
-    end
-
-    render_game(args)
   end
 
   def render_game args
+    args.outputs.primitives << args.state.game.tick(args)
     args.outputs.primitives << args.state.output
     args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
   end
