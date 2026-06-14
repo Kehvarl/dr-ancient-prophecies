@@ -135,4 +135,23 @@ module Main
     out
   end
 
+  def center_text box, text
+    tw, th = DR.calcstringbox(text)
+    tx = (box.x + box.w.div(2)) - (tw.div(2))
+    ty = (box.y + box.h.div(2)) #- (th.div(2))
+    return tx, ty
+  end
+
+  def create_starfield args
+    args.outputs[:starfield].w = 1600
+    args.outputs[:starfield].h = 1600
+    5000.times do
+      x = Numeric.rand(0...1600)
+      y = Numeric.rand(0...1600)
+      c = {r:Numeric.rand(0...255), g:Numeric.rand(128...255), b:Numeric.rand(128...255)}
+      s = Numeric.rand(1..4)
+      args.outputs[:starfield].primitives << {x:x, y: y, w: s, h: s, **c}.solid!
+    end
+  end
+
 end
