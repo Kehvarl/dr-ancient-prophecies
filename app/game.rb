@@ -66,9 +66,9 @@ class Game
     args.outputs[:placeholder].primitives << {x:0, y:0, w:132, h:200, r:0, g:0, b:0}.border!
   end
 
-  def draw_playfield
+  def draw_playfield args
     out = []
-    out << {x: 0, y: 0, w: 1280, h: 720, r: 0, g: 80, b:40}.solid!
+    out << {x: 0, y: 0, w: 1280, h: 720, r: 0, g: 80, b:40, a:(255 -  (args.state.incorrect * 64))}.solid!
     out << {x:958, y:498, w:132, h:200, r:0, g:0, b:0}.border!
 
     @positions.each do |p|
@@ -85,8 +85,8 @@ class Game
   end
 
   def tick args
-    args.outputs.primitives << draw_playfield
-    args.outputs.primitives << draw_buttons
+    args.outputs.primitives << draw_playfield(args)
+    args.outputs.primitives << draw_buttons()
     l = @lower.tick(args)
     h = @higher.tick(args)
     if l

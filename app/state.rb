@@ -2,19 +2,22 @@ module Main
 
   def state_menu args
     # Button locations
-    new_box = {x:15, y:445, w:1250, h:45}
-    quit_box = {x:15, y:295, w:1250, h:45}
+    new_box = {x:15, y:545, w:1250, h:45}
+    quit_box = {x:15, y:445, w:1250, h:45}
 
     # Get Input
     hover_new = args.inputs.mouse.intersect_rect?(new_box)
     hover_quit = args.inputs.mouse.intersect_rect?(quit_box)
 
     # Update state/process
-    if args.inputs.mouse.click
-      if hover_quit
-        DR.request_quit
-      elsif hover_new
-        args.state.game_state = :new_game
+    args.state.game_state_delay -= 1
+    if args.state.game_state_delay <= 0
+      if args.inputs.mouse.click
+        if hover_quit
+          DR.request_quit
+        elsif hover_new
+          args.state.game_state = :new_game
+        end
       end
     end
 
@@ -25,6 +28,10 @@ module Main
 
     out << button(new_box, "New Game", {r: 0, g: 128, b:40}, hover_new)
     out << button(quit_box, "Quit", {r: 128, g: 128, b:40}, hover_quit)
+
+    tx, ty = center_text({x:100, y:640, w:1080, h:100}, "Ancient Prophecies", 24)
+    c = {r:Numeric.rand(32...44), g:Numeric.rand(44...64), b:Numeric.rand(32...44)}
+    out << {x:tx, y:ty, text:"Ancient Prophecies", size_enum:24, **c}.label!
 
     args.outputs.primitives << out
   end
@@ -39,6 +46,7 @@ module Main
     args.state.major = 0
     # args.state.major_incorrect = 0  # We never forget...
     args.state.deck.shuffle()
+    create_starfield args
     args.state.game_state = :draw_first_card
   end
 
@@ -181,8 +189,8 @@ module Main
     # Do something to indicate the new stack
     # Trigger first-draw in new stack
     if args.state.current_stack >= 5
+      args.state.game_state_delay = 40
       args.state.game_state = :game_over
-      create_starfield args
     else
       args.state.game_state = :draw_first_card
     end
@@ -191,13 +199,12 @@ module Main
   end
 
   def state_game_over args
-    args.state.angle ||= 0
-    args.state.angle += 0.01
+
+    args.state.game_state_delay -= 1
+
     args.outputs.primitives << {x:0, y:0, w:1280, h:720, r: 0, g: 0, b:0}.solid!
-    args.outputs.primitives << {x:640, y:360, w:1600, h:1600,
-                                angle: args.state.angle,
-                                anchor_x:0.5, anchor_y:0.5, path: :starfield}
-    render_game(args)
+
+    render_game(args, false)
     args.outputs.primitives << {x:100, y:100, w:1080, h:520, r:160, g:192, b:128, a:192}.solid!
     args.outputs.primitives << {x:100, y:100, w:1080, h:520, r:0, g:0, b:0}.border!
     tx, ty = center_text({x:100, y:520, w:1080, h:100}, "Game Over")
@@ -208,5 +215,14 @@ module Main
     args.outputs.primitives << {x:tx, y:ty, text:"Correct: #{args.state.correct}", r:0, g:0, b:255}.label!
     tx, ty = center_text({x:100, y:442, w:1080, h:24}, "Incorrect: #{args.state.incorrect}")
     args.outputs.primitives << {x:tx, y:ty, text:"Incorrect: #{args.state.incorrect}", r:128, g:0, b:0}.label!
+
+    if args.state.game_state_delay <= 0
+      tx, ty = center_text({x:100, y:340, w:1080, h:24}, "Click for Menu")
+      args.outputs.primitives << {x:tx, y:ty, text:"Click for Menu", r:0, g:0, b:0}.label!
+      if args.inputs.mouse.click
+        args.state.game_state_delay = 30
+        args.state.game_state = :menu
+      end
+    end
   end
 end

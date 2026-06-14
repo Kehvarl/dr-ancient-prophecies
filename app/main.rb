@@ -5,7 +5,7 @@ require('app/state.rb')
 module Main
   def initialize args
     args.state.game_state = :menu
-    args.state.game_state_delay = 0
+    args.state.game_state_delay = 30
     args.state.deck = Deck.new()
     args.state.game = Game.new()
     args.state.game.placeholder(args)
@@ -49,8 +49,15 @@ module Main
 
   end
 
-  def render_game args
-    args.outputs.primitives << args.state.game.tick(args)
+  def render_game args, bg=true
+    args.state.angle ||= 0
+    args.state.angle += 0.01
+    args.outputs.primitives << {x:640, y:360, w:1600, h:1600,
+                                angle: args.state.angle,
+                                anchor_x:0.5, anchor_y:0.5, path: :starfield}
+    if bg
+      args.outputs.primitives << args.state.game.tick(args)
+    end
     args.outputs.primitives << args.state.output
     args.outputs.primitives << args.state.deck.render(960, 500, 128, 196)
   end
@@ -71,8 +78,8 @@ module Main
     out
   end
 
-  def center_text box, text
-    tw, th = DR.calcstringbox(text)
+  def center_text box, text, size=1
+    tw, th = DR.calcstringbox(text, size_enum:size)
     tx = (box.x + box.w.div(2)) - (tw.div(2))
     ty = (box.y + box.h.div(2)) #- (th.div(2))
     return tx, ty
@@ -81,7 +88,7 @@ module Main
   def create_starfield args
     args.outputs[:starfield].w = 1600
     args.outputs[:starfield].h = 1600
-    5000.times do
+    2500.times do
       x = Numeric.rand(0...1600)
       y = Numeric.rand(0...1600)
       c = {r:Numeric.rand(0...255), g:Numeric.rand(128...255), b:Numeric.rand(128...255)}
