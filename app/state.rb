@@ -62,10 +62,7 @@ module Main
       args.state.stacks_top[args.state.current_stack] = card
       args.state.game_state = :player_input
     else
-      #puts args.state.stacks_top
-      # Nothing to draw
-      # Options: Reshuffle, magically summon more cards, or end round.
-      # Honestly, I should put covered cards in the discard pile and then I can shuffle that.
+      # Shuffle discards.
       args.state.deck.shuffle_discards()
       position = args.state.game.positions[args.state.current_stack]
       card = args.state.deck.draw()
